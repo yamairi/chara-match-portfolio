@@ -1,10 +1,359 @@
-<!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CHARA MATCH | Interactive Demo</title><link rel="stylesheet" href="style.css"></head>
-<body><header><a href="./" class="brand">CHARA<span> MATCH</span></a><span class="tag">PORTFOLIO / SYNTHETIC DEMO</span></header>
-<main><section class="intro"><p class="eyebrow">DATA → INSIGHT → COLLABORATION</p><h1>次のコラボを、<br>顧客のつながりから。</h1><p>商品とキャラクターの相性を比較し、新しい顧客層への広がりを探る。</p><div class="notice">完全人工データによる体験版 · 元データ非公開・ポートフォリオ用の一般化再実装</div></section>
-<section class="workspace"><aside><p class="eyebrow">01 / SELECT</p><h2>組み合わせを選ぶ</h2><label for="product">商品</label><select id="product"></select><label for="character">キャラクター</label><select id="character"></select><p class="hint">選択するとスコアと構成比が切り替わります。すべて架空の商品・キャラクターです。</p><div class="aside-bottom"><strong>48</strong> 組の比較データ<br><small>6 products × 8 characters</small></div></aside>
-<div class="results" aria-live="polite"><div class="section-head"><div><p class="eyebrow">02 / COMPARE</p><h2 id="pair-title"></h2></div><span id="category" class="badge"></span></div><div class="metrics"><article><span>現在の顧客との相性</span><strong id="compatibility"></strong><small>コサイン類似度 / 0–1</small></article><article><span>新しい顧客層への拡張余地</span><strong id="expansion"></strong><small>比較用の指標 / 大きいほど高い</small></article><article><span>背景カテゴリ以上の支持</span><strong id="unexpected"></strong><small>実支持率 − 期待支持率</small></article></div><p id="reason" class="reason"></p>
-<div class="chart-head"><h3>どの顧客層につながる？</h3><div class="legend"><span>● 商品購入者</span><span>● キャラクター支持者</span></div></div><div id="chart"></div><p class="hint">支持者の構成比は少数サンプルの影響を抑える縮約後の値です。クラスタ番号に固定的な属性の意味はありません。</p></div></section>
-<section class="ranking"><div class="section-head"><div><p class="eyebrow">03 / EXPLORE</p><h2>この商品の候補を比較</h2></div><label>並び順 <select id="sort"><option value="expansion_m30">拡張余地が高い順</option><option value="compatibility_m30">相性が高い順</option><option value="unexpected_affinity">支持の上振れが高い順</option></select></label></div><div class="table-wrap"><table><thead><tr><th>候補</th><th>相性</th><th>拡張余地</th><th>支持の差</th><th>分類</th></tr></thead><tbody id="ranking"></tbody></table></div><button id="download" class="download">この商品の比較結果をCSVで保存 ↓</button></section>
-<details><summary>データと指標について</summary><p>この画面はPythonで事前計算した人工データの結果を切り替えて表示します。ブラウザでモデルを再学習するものではありません。</p><p>相性は購入者と支持者の構成比のコサイン類似度、拡張余地は商品側の余地と市場平均を上回る支持構成比を組み合わせた指標です。支持の差は背景カテゴリから推定した期待値との差です。</p><p>分類は全48組の相対的な分位点に基づきます。数値は売上増加や因果効果の予測ではなく、候補探索のための指標です。</p></details>
-<footer>CHARA MATCH / Portfolio Edition <span>Fully synthetic. Built for exploration.</span></footer></main><script src="data.js"></script><script src="app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>CHARA MATCH | Synthetic Demo</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <h1>CHARA MATCH</h1>
+    <p>データでつなぐ、ブランドとファンの接点</p>
+  </div>
+
+  <div class="demo-label">
+    SYNTHETIC DATA DEMO
+  </div>
+</header>
+
+
+<main>
+
+  <section class="intro">
+    <div>
+      <span class="eyebrow">CHARACTER COLLABORATION SUPPORT</span>
+
+      <h2>
+        商品に合うキャラクターを、<br>
+        「王道」と「発見」の2軸で比較。
+      </h2>
+    </div>
+
+    <p>
+      商品を選択すると、現在顧客との親和性と、
+      新しい顧客層への拡張余地から
+      Synthetic Character候補を比較できます。
+    </p>
+  </section>
+
+
+  <section class="dashboard">
+
+    <!-- 左：商品選択 -->
+    <div class="panel product-panel">
+
+      <div class="panel-title">
+        <div>
+          <span>PRODUCT</span>
+          <h3>商品を選択</h3>
+        </div>
+
+        <div class="step">
+          STEP 1
+        </div>
+      </div>
+
+
+      <label>
+        カテゴリ
+        <select id="categorySelect"></select>
+      </label>
+
+
+      <label>
+        商品名
+        <select id="productSelect"></select>
+      </label>
+
+
+      <div class="info-block">
+        <span>価格帯</span>
+        <strong id="price"></strong>
+      </div>
+
+
+      <div class="info-block">
+        <span>主な購買層</span>
+        <strong id="target"></strong>
+      </div>
+
+
+      <div class="info-block">
+        <span>キーワード</span>
+
+        <div id="keywords" class="tags"></div>
+      </div>
+
+
+      <div class="product-description">
+        <span>商品プロファイル</span>
+        <p id="description"></p>
+      </div>
+
+    </div>
+
+
+
+    <!-- 中央：ランキング -->
+    <div class="panel ranking-panel">
+
+      <div class="panel-title">
+        <div>
+          <span>MATCHING</span>
+          <h3>
+            相性の良い<br>
+            キャラクター類型 TOP5
+          </h3>
+        </div>
+
+        <div class="step">
+          STEP 2
+        </div>
+      </div>
+
+
+      <div id="typeRanking"></div>
+
+    </div>
+
+
+
+    <!-- 右 -->
+    <div class="right-column">
+
+      <!-- マトリクス -->
+      <div class="panel">
+
+        <div class="panel-title small">
+          <div>
+            <span>WHY</span>
+            <h3>相性の理由</h3>
+          </div>
+        </div>
+
+
+        <p class="matrix-title">
+          Compatibility × Expansion
+        </p>
+
+
+        <div class="matrix-wrapper">
+
+          <div class="matrix-label top">
+            Expansion 高
+          </div>
+
+          <div class="matrix-label bottom">
+            Expansion 低
+          </div>
+
+          <div class="matrix-label left">
+            Compatibility 低
+          </div>
+
+          <div class="matrix-label right">
+            Compatibility 高
+          </div>
+
+
+          <div id="matrix" class="matrix">
+
+            <div class="matrix-v"></div>
+            <div class="matrix-h"></div>
+
+            <div class="quadrant q1">
+              新市場開拓
+            </div>
+
+            <div class="quadrant q2">
+              本命候補
+            </div>
+
+            <div class="quadrant q3">
+              優先度低め
+            </div>
+
+            <div class="quadrant q4">
+              既存顧客強化
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <p id="matrixExplanation" class="matrix-explanation"></p>
+
+      </div>
+
+
+
+      <!-- キャラクター候補 -->
+      <div class="panel">
+
+        <div class="panel-title small">
+
+          <div>
+            <span>CANDIDATES</span>
+            <h3>具体的なキャラクター候補</h3>
+          </div>
+
+          <div class="step">
+            STEP 3
+          </div>
+
+        </div>
+
+
+        <div id="candidateList"></div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- 詳細 -->
+  <section class="panel detail-panel">
+
+    <div class="detail-header">
+
+      <div>
+        <span class="section-label">
+          CHARACTER DETAIL
+        </span>
+
+        <h3 id="characterName"></h3>
+
+        <p id="characterType"></p>
+      </div>
+
+
+      <div class="total-score">
+        <span>参考スコア</span>
+        <strong id="totalScore"></strong>
+      </div>
+
+    </div>
+
+
+
+    <div class="detail-grid">
+
+      <!-- 指標 -->
+      <div class="metrics">
+
+        <div class="metric">
+          <span>Compatibility</span>
+          <strong id="compatibility"></strong>
+          <small>現在顧客との親和性</small>
+        </div>
+
+
+        <div class="metric">
+          <span>Expansion</span>
+          <strong id="expansion"></strong>
+          <small>新市場への拡張余地</small>
+        </div>
+
+
+        <div class="metric">
+          <span>Unexpected Affinity</span>
+          <strong id="unexpected"></strong>
+          <small>属性以上の親和性</small>
+        </div>
+
+
+        <div class="metric">
+          <span>Reliability</span>
+          <strong id="reliability"></strong>
+          <small>synthetic sample上の安定性</small>
+        </div>
+
+      </div>
+
+
+
+      <!-- セグメント -->
+      <div class="segment-box">
+
+        <span class="section-label">
+          AUDIENCE PROFILE
+        </span>
+
+        <h4>5セグメント構成の差</h4>
+
+
+        <div class="segment-legend">
+          <span class="legend-current"></span>
+          現在顧客
+
+          <span class="legend-character"></span>
+          キャラ支持者
+        </div>
+
+
+        <div id="segmentChart"></div>
+
+      </div>
+
+
+
+      <!-- Insight -->
+      <div class="insight">
+
+        <span class="section-label">
+          INSIGHT
+        </span>
+
+        <h4>施策仮説</h4>
+
+        <p id="reason"></p>
+
+        <div id="candidateTags" class="tags"></div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <section class="notice">
+
+    <strong>
+      Synthetic Data / Interpretation Note
+    </strong>
+
+    <p>
+      本デモは完全に人工生成したsynthetic dataを使用した
+      ポートフォリオ用の一般化再実装です。
+      表示される商品・キャラクター・スコアは実在の分析結果ではありません。
+      また、キャラクター起用による売上増加等の因果効果を予測するものではなく、
+      候補比較・優先順位付け・施策仮説の生成を目的としています。
+    </p>
+
+  </section>
+
+</main>
+
+
+<footer>
+  CHARA MATCH — Portfolio Demo
+</footer>
+
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
