@@ -1,36 +1,534 @@
-"use strict";
-const data = window.DEMO_DATA;
-const $ = id => document.getElementById(id);
-const products = [...new Set(data.pair_scores.map(x=>x.product_variable))];
-const characters = [...new Set(data.pair_scores.map(x=>x.character_variable))];
-function options(id, values){for(const value of values){const option=document.createElement('option');option.value=value;option.textContent=value;$(id).append(option);}}
-options('product',products);options('character',characters);
-const number = (v, digits=3)=>Number(v).toFixed(digits);
-const points = v=>(Number(v)>=0?'+':'')+number(Number(v)*100,2)+' pt';
-function rows(){return data.pair_scores.filter(x=>x.product_variable===$('product').value).sort((a,b)=>Number(b[$('sort').value])-Number(a[$('sort').value]) || a.character_variable.localeCompare(b.character_variable));}
-function render(){
- const product=$('product').value, character=$('character').value;
- const pair=data.pair_scores.find(x=>x.product_variable===product&&x.character_variable===character);
- $('pair-title').textContent=product+' × '+character;
- $('category').textContent=pair.candidate_type;
- $('compatibility').textContent=number(pair.compatibility_m30);
- $('expansion').textContent=number(pair.expansion_m30);
- $('unexpected').textContent=points(pair.unexpected_affinity);
- $('reason').textContent=pair.recommendation_reason;
- const p=data.product_vectors.find(x=>x.entity_variable===product),c=data.character_vectors.find(x=>x.character_variable===character);
- $('chart').replaceChildren();
- for(let k=1;k<=4;k++){
-  const row=document.createElement('div');row.className='cluster';const label=document.createElement('span');label.className='cluster-label';label.textContent='クラスタ '+k;row.append(label);
-  const bars=document.createElement('div');bars.className='bars';
-  [Number(p['C'+k+'_share']),Number(c['m30_C'+k+'_share'])].forEach((v,i)=>{const line=document.createElement('div');line.className='bar-row';const bar=document.createElement('div');bar.className='bar'+(i?' character':'');bar.style.width=(v*100)+'%';const value=document.createElement('span');value.textContent=number(v*100,1)+'%';line.append(bar,value);bars.append(line);});row.append(bars);$('chart').append(row);
- }
- $('ranking').replaceChildren();
- for(const item of rows()){
-  const tr=document.createElement('tr');if(item.character_variable===character)tr.className='selected';
-  const td=document.createElement('td'),button=document.createElement('button');button.textContent=item.character_variable;button.setAttribute('aria-label',item.character_variable+'を選択');button.onclick=()=>{$('character').value=item.character_variable;render();};td.append(button);tr.append(td);
-  for(const text of [number(item.compatibility_m30),number(item.expansion_m30),points(item.unexpected_affinity),item.candidate_type]){const cell=document.createElement('td');cell.textContent=text;tr.append(cell);}$('ranking').append(tr);
- }
+let currentProduct = DEMO_DATA.products[0];
+let currentCharacter = currentProduct.characters[0];
+
+
+const categorySelect =
+  document.getElementById("categorySelect");
+
+const productSelect =
+  document.getElementById("productSelect");
+
+
+
+function init() {
+
+  setupCategories();
+
+  updateProductList();
+
+  render();
+
 }
-for(const id of ['product','character','sort'])$(id).addEventListener('change',render);
-$('download').onclick=()=>{const selected=rows(),keys=Object.keys(selected[0]);const escape=v=>'"'+String(v).replaceAll('"','""')+'"';const csv='\ufeff'+[keys,...selected.map(row=>keys.map(k=>row[k]))].map(row=>row.map(escape).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=$('product').value+'_synthetic_pairs.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
-render();
+
+
+function setupCategories() {
+
+  const categories =
+    [...new Set(
+      DEMO_DATA.products.map(
+        p => p.category
+      )
+    )];
+
+
+  categorySelect.innerHTML =
+    categories
+      .map(
+        category =>
+          `<option value="${category}">
+             ${category}
+           </option>`
+      )
+      .join("");
+
+}
+
+
+function updateProductList() {
+
+  const category =
+    categorySelect.value;
+
+
+  const products =
+    DEMO_DATA.products.filter(
+      p => p.category === category
+    );
+
+
+  productSelect.innerHTML =
+    products
+      .map(
+        p =>
+          `<option value="${p.id}">
+             ${p.name}
+           </option>`
+      )
+      .join("");
+
+
+  currentProduct = products[0];
+
+  currentCharacter =
+    currentProduct.characters[0];
+
+}
+
+
+
+categorySelect.addEventListener(
+  "change",
+  () => {
+
+    updateProductList();
+
+    render();
+
+  }
+);
+
+
+
+productSelect.addEventListener(
+  "change",
+  () => {
+
+    currentProduct =
+      DEMO_DATA.products.find(
+        p => p.id === productSelect.value
+      );
+
+
+    currentCharacter =
+      currentProduct.characters[0];
+
+
+    render();
+
+  }
+);
+
+
+
+function render() {
+
+  renderProduct();
+
+  renderRanking();
+
+  renderMatrix();
+
+  renderCandidates();
+
+  renderCharacter();
+
+}
+
+
+
+function renderProduct() {
+
+  document.getElementById("price")
+    .textContent =
+      currentProduct.price;
+
+
+  document.getElementById("target")
+    .textContent =
+      currentProduct.target;
+
+
+  document.getElementById("description")
+    .textContent =
+      currentProduct.description;
+
+
+  document.getElementById("keywords")
+    .innerHTML =
+      currentProduct.keywords
+        .map(
+          keyword =>
+            `<span class="tag">
+              ${keyword}
+            </span>`
+        )
+        .join("");
+
+}
+
+
+
+function renderRanking() {
+
+  const container =
+    document.getElementById("typeRanking");
+
+
+  container.innerHTML =
+    currentProduct.types
+      .map(
+        (type, index) => {
+
+          return `
+
+          <div class="rank-row">
+
+            <div class="rank-number">
+              ${index + 1}
+            </div>
+
+            <div class="rank-content">
+
+              <strong>
+                ${type.name}
+              </strong>
+
+              <div class="score-bar">
+
+                <div
+                  class="score-fill"
+                  style="width:${type.score}%">
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="rank-score">
+              ${type.score}
+            </div>
+
+          </div>
+
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+
+function renderMatrix() {
+
+  const matrix =
+    document.getElementById("matrix");
+
+
+  matrix
+    .querySelectorAll(".matrix-point")
+    .forEach(
+      el => el.remove()
+    );
+
+
+  currentProduct.types.forEach(
+    (type, index) => {
+
+      const point =
+        document.createElement("div");
+
+
+      point.className =
+        index === 0
+          ? "matrix-point main-point"
+          : "matrix-point";
+
+
+      point.style.left =
+        `${type.compatibility}%`;
+
+
+      point.style.bottom =
+        `${type.expansion}%`;
+
+
+      point.title =
+        `${type.name}
+Compatibility ${type.compatibility}
+Expansion ${type.expansion}`;
+
+
+      matrix.appendChild(point);
+
+    }
+  );
+
+
+  const best =
+    currentProduct.types[0];
+
+
+  document.getElementById(
+    "matrixExplanation"
+  ).textContent =
+
+    `${best.name}は、
+     Compatibility ${best.compatibility}、
+     Expansion ${best.expansion}。
+     現在顧客との親和性と、
+     新市場への拡張余地を
+     同時に比較しています。`;
+
+}
+
+
+
+function renderCandidates() {
+
+  const container =
+    document.getElementById(
+      "candidateList"
+    );
+
+
+  container.innerHTML =
+    currentProduct.characters
+      .map(
+        (character, index) => {
+
+          return `
+
+          <button
+            class="candidate ${
+              character.name ===
+              currentCharacter.name
+                ? "active"
+                : ""
+            }"
+
+            onclick="
+              selectCharacter(${index})
+            "
+          >
+
+            <div>
+
+              <strong>
+                ${character.name}
+              </strong>
+
+              <span>
+                ${character.type}
+              </span>
+
+            </div>
+
+            <div class="candidate-score">
+              ${character.score}
+            </div>
+
+            <div class="arrow">
+              ›
+            </div>
+
+          </button>
+
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+
+function selectCharacter(index) {
+
+  currentCharacter =
+    currentProduct.characters[index];
+
+
+  renderCandidates();
+
+  renderCharacter();
+
+
+  document
+    .querySelector(".detail-panel")
+    .scrollIntoView({
+      behavior: "smooth"
+    });
+
+}
+
+
+
+function renderCharacter() {
+
+  const c =
+    currentCharacter;
+
+
+  document.getElementById(
+    "characterName"
+  ).textContent =
+    c.name;
+
+
+  document.getElementById(
+    "characterType"
+  ).textContent =
+    c.type;
+
+
+  document.getElementById(
+    "totalScore"
+  ).textContent =
+    c.score;
+
+
+  document.getElementById(
+    "compatibility"
+  ).textContent =
+    c.compatibility;
+
+
+  document.getElementById(
+    "expansion"
+  ).textContent =
+    c.expansion;
+
+
+  document.getElementById(
+    "unexpected"
+  ).textContent =
+    c.unexpected;
+
+
+  document.getElementById(
+    "reliability"
+  ).textContent =
+    c.reliability;
+
+
+  document.getElementById(
+    "reason"
+  ).textContent =
+    c.reason;
+
+
+  document.getElementById(
+    "candidateTags"
+  ).innerHTML =
+    c.tags
+      .map(
+        tag =>
+          `<span class="tag">
+            ${tag}
+          </span>`
+      )
+      .join("");
+
+
+  renderSegments();
+
+}
+
+
+
+function renderSegments() {
+
+  const names = [
+    "Segment A",
+    "Segment B",
+    "Segment C",
+    "Segment D",
+    "Segment E"
+  ];
+
+
+  const container =
+    document.getElementById(
+      "segmentChart"
+    );
+
+
+  container.innerHTML =
+    names
+      .map(
+        (name, index) => {
+
+          const current =
+            currentProduct
+              .customerSegments[index];
+
+
+          const character =
+            currentCharacter
+              .supporterSegments[index];
+
+
+          const diff =
+            character - current;
+
+
+          return `
+
+          <div class="segment-row">
+
+            <div class="segment-name">
+              ${name}
+            </div>
+
+
+            <div>
+
+              <div class="segment-track">
+
+                <div
+                  class="segment-current"
+                  style="width:${current}%">
+                </div>
+
+              </div>
+
+
+              <div class="segment-track">
+
+                <div
+                  class="segment-character"
+                  style="width:${character}%">
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="
+                segment-diff
+                ${
+                  diff >= 0
+                  ? "positive"
+                  : "negative"
+                }
+              "
+            >
+
+              ${
+                diff >= 0
+                ? "+"
+                : ""
+              }
+
+              ${diff}pt
+
+            </div>
+
+          </div>
+
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+
+init();
