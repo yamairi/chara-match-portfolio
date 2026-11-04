@@ -17,6 +17,10 @@
 
 デモは人工データの計算済み結果を表示するものです。ブラウザ上でモデルの再学習は行いません。
 
+## Demo
+
+👉 [CHARA MATCH Interactive Demo](https://yamairi.github.io/chara-match-portfolio/)
+
 ## 分析の流れ
 
 ```text
