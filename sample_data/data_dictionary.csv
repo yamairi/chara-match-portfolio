@@ -1,0 +1,31 @@
+variable,type,description
+SYNTHETIC_ID,string,Sequential artificial identifier
+SAMPLE_WEIGHT,positive float,Artificial weight; not a population calibration
+CONTEXT_GROUP,category,Fictional context group without demographic meaning
+CHANNEL_GROUP,category,Fictional channel group
+VALUE_ITEM_01,float,Artificial continuous preference item
+VALUE_ITEM_02,float,Artificial continuous preference item
+VALUE_ITEM_03,float,Artificial continuous preference item
+VALUE_ITEM_04,float,Artificial continuous preference item
+VALUE_ITEM_05,float,Artificial continuous preference item
+VALUE_ITEM_06,float,Artificial continuous preference item
+VALUE_ITEM_07,float,Artificial continuous preference item
+VALUE_ITEM_08,float,Artificial continuous preference item
+VALUE_ITEM_09,float,Artificial continuous preference item
+VALUE_ITEM_10,float,Artificial continuous preference item
+VALUE_ITEM_11,float,Artificial continuous preference item
+VALUE_ITEM_12,float,Artificial continuous preference item
+PRODUCT_01,nonnegative integer,Artificial quantity; positive means purchase
+PRODUCT_02,nonnegative integer,Artificial quantity; positive means purchase
+PRODUCT_03,nonnegative integer,Artificial quantity; positive means purchase
+PRODUCT_04,nonnegative integer,Artificial quantity; positive means purchase
+PRODUCT_05,nonnegative integer,Artificial quantity; positive means purchase
+PRODUCT_06,nonnegative integer,Artificial quantity; positive means purchase
+CHARACTER_SUPPORT_01,binary,Artificial character support
+CHARACTER_SUPPORT_02,binary,Artificial character support
+CHARACTER_SUPPORT_03,binary,Artificial character support
+CHARACTER_SUPPORT_04,binary,Artificial character support
+CHARACTER_SUPPORT_05,binary,Artificial character support
+CHARACTER_SUPPORT_06,binary,Artificial character support
+CHARACTER_SUPPORT_07,binary,Artificial character support
+CHARACTER_SUPPORT_08,binary,Artificial character support
