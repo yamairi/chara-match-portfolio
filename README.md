@@ -94,10 +94,6 @@ docs/               方法論・データ方針・検証記録
 
 詳細：[方法論](docs/methodology.md) / [再実装について](RECONSTRUCTION_NOTES.md) / [検証結果](docs/verification.md)
 
-## GitHubへの配置
 
-新しいリポジトリに、展開した `chara-match-portfolio` **フォルダの中身**を配置します。
-ルートにREADMEが来るようにし、`.github/` と `.gitignore` も含めてください。
-ZIP本体や以前のリポジトリの履歴は追加しません。本パッケージにGit履歴は含まれていません。
 
 コードの再配布ライセンスは設定していません。
