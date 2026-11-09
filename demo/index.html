@@ -1,359 +1,76 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>CHARA MATCH | Synthetic Demo</title>
-
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CHARA MATCH synthetic portfolio demo" />
+  <title>CHARA MATCH | 3-Step Synthetic Demo</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+  <header class="header">
+    <div class="brand"><div class="logo">CM</div><div><h1>CHARA MATCH</h1><p>商品 × キャラクターのコラボ候補探索</p></div></div>
+    <span class="demo-badge">SYNTHETIC DEMO</span>
+  </header>
 
-<header>
-  <div class="brand">
-    <h1>CHARA MATCH</h1>
-    <p>データでつなぐ、ブランドとファンの接点</p>
-  </div>
+  <nav class="steps-nav">
+    <button class="step-tab active" data-screen="screen-product"><span>1</span>商品選択</button>
+    <button class="step-tab" data-screen="screen-group"><span>2</span>キャラクター候補</button>
+    <button class="step-tab" data-screen="screen-matrix"><span>3</span>戦略マトリクス</button>
+  </nav>
 
-  <div class="demo-label">
-    SYNTHETIC DATA DEMO
-  </div>
-</header>
+  <main class="main">
+    <section id="screen-product" class="screen active">
+      <div class="screen-heading"><div><small>STEP 1</small><h2>販売したい商品を選択し、推奨キャラクターグループを確認</h2></div></div>
+      <div class="product-layout">
+        <aside class="card selector">
+          <label>カテゴリ<select id="categorySelect"></select></label>
+          <label>商品<select id="productSelect"></select></label>
+          <div class="meta"><div><span>価格帯</span><strong id="priceText">-</strong></div><div><span>主な購買層</span><strong id="audienceText">-</strong></div></div>
+          <div class="keyword"><span>キーワード</span><div id="keywordChips" class="chips"></div></div>
+          <div class="notice"><strong>Demo data</strong><p>商品・キャラクター・スコアはすべて人工生成です。</p></div>
+        </aside>
 
+        <section class="card result-card">
+          <div class="topline"><span>CHARA MATCH 2026</span><span id="selectedCategoryText">-</span></div>
+          <h3 id="selectedProductTitle">-</h3>
+          <div class="best-group"><span>推奨キャラクターグループ</span><div><strong id="bestGroupName">-</strong><b id="bestGroupScore">-</b></div></div>
+          <div class="section-title"><h4>グループの順位</h4><p>グループをクリックすると個別キャラクター候補を確認できます。</p></div>
+          <div id="groupRanking"></div>
+        </section>
+      </div>
+    </section>
 
-<main>
+    <section id="screen-group" class="screen">
+      <div class="screen-heading"><div><small>STEP 2</small><h2>キャラクターグループをクリックし、個別キャラをランキング表示</h2></div><button id="backToProduct" class="link-btn">← 商品選択に戻る</button></div>
+      <section class="card group-detail">
+        <div class="group-top"><div><small>SELECTED GROUP</small><h3 id="groupDetailName">-</h3><p id="groupDetailDescription">-</p></div><div class="big-score"><span>グループスコア</span><strong id="groupDetailScore">-</strong></div></div>
+        <div class="metrics"><div><span>Compatibility</span><strong id="groupCompatibility">-</strong><small>既存顧客との親和性</small></div><div><span>Expansion</span><strong id="groupExpansion">-</strong><small>新市場への拡張余地</small></div><div><span>Unexpected Affinity</span><strong id="groupUnexpected">-</strong><small>基本属性以上の親和性</small></div></div>
+        <div class="section-title"><h4>グループ内キャラクター順位</h4><p>総合参考スコアと施策上の位置づけを表示します。</p></div>
+        <div id="characterTable"></div>
+      </section>
+    </section>
 
-  <section class="intro">
-    <div>
-      <span class="eyebrow">CHARACTER COLLABORATION SUPPORT</span>
-
-      <h2>
-        商品に合うキャラクターを、<br>
-        「王道」と「発見」の2軸で比較。
-      </h2>
-    </div>
-
-    <p>
-      商品を選択すると、現在顧客との親和性と、
-      新しい顧客層への拡張余地から
-      Synthetic Character候補を比較できます。
-    </p>
-  </section>
-
-
-  <section class="dashboard">
-
-    <!-- 左：商品選択 -->
-    <div class="panel product-panel">
-
-      <div class="panel-title">
-        <div>
-          <span>PRODUCT</span>
-          <h3>商品を選択</h3>
+    <section id="screen-matrix" class="screen">
+      <div class="screen-heading"><div><small>STEP 3</small><h2>マトリクスで推奨戦略を視覚化</h2></div><span id="matrixProductLabel" class="pill">-</span></div>
+      <section class="card matrix-card">
+        <div class="section-title"><h3>キャラクター候補のポジショニング</h3><p>横軸は現在顧客との親和性、縦軸は新市場への拡張余地を表します。</p></div>
+        <div class="matrix-grid">
+          <div class="quad q1"><strong>新市場開拓</strong><span>拡張性を重視</span></div>
+          <div class="quad q2"><strong>本命候補</strong><span>親和性と拡張性を両立</span></div>
+          <div class="quad q3"><strong>優先度低め</strong><span>他候補と比較</span></div>
+          <div class="quad q4"><strong>既存顧客強化</strong><span>親和性を重視</span></div>
+          <div class="axis-v"></div><div class="axis-h"></div><div class="axis-label y">新市場への拡張余地 ↑</div><div class="axis-label x">現在顧客との親和性 →</div>
+          <div id="matrixPoints"></div>
         </div>
-
-        <div class="step">
-          STEP 1
-        </div>
-      </div>
-
-
-      <label>
-        カテゴリ
-        <select id="categorySelect"></select>
-      </label>
-
-
-      <label>
-        商品名
-        <select id="productSelect"></select>
-      </label>
-
-
-      <div class="info-block">
-        <span>価格帯</span>
-        <strong id="price"></strong>
-      </div>
-
-
-      <div class="info-block">
-        <span>主な購買層</span>
-        <strong id="target"></strong>
-      </div>
-
-
-      <div class="info-block">
-        <span>キーワード</span>
-
-        <div id="keywords" class="tags"></div>
-      </div>
-
-
-      <div class="product-description">
-        <span>商品プロファイル</span>
-        <p id="description"></p>
-      </div>
-
-    </div>
-
-
-
-    <!-- 中央：ランキング -->
-    <div class="panel ranking-panel">
-
-      <div class="panel-title">
-        <div>
-          <span>MATCHING</span>
-          <h3>
-            相性の良い<br>
-            キャラクター類型 TOP5
-          </h3>
-        </div>
-
-        <div class="step">
-          STEP 2
-        </div>
-      </div>
-
-
-      <div id="typeRanking"></div>
-
-    </div>
-
-
-
-    <!-- 右 -->
-    <div class="right-column">
-
-      <!-- マトリクス -->
-      <div class="panel">
-
-        <div class="panel-title small">
-          <div>
-            <span>WHY</span>
-            <h3>相性の理由</h3>
-          </div>
-        </div>
-
-
-        <p class="matrix-title">
-          Compatibility × Expansion
-        </p>
-
-
-        <div class="matrix-wrapper">
-
-          <div class="matrix-label top">
-            Expansion 高
-          </div>
-
-          <div class="matrix-label bottom">
-            Expansion 低
-          </div>
-
-          <div class="matrix-label left">
-            Compatibility 低
-          </div>
-
-          <div class="matrix-label right">
-            Compatibility 高
-          </div>
-
-
-          <div id="matrix" class="matrix">
-
-            <div class="matrix-v"></div>
-            <div class="matrix-h"></div>
-
-            <div class="quadrant q1">
-              新市場開拓
-            </div>
-
-            <div class="quadrant q2">
-              本命候補
-            </div>
-
-            <div class="quadrant q3">
-              優先度低め
-            </div>
-
-            <div class="quadrant q4">
-              既存顧客強化
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <p id="matrixExplanation" class="matrix-explanation"></p>
-
-      </div>
-
-
-
-      <!-- キャラクター候補 -->
-      <div class="panel">
-
-        <div class="panel-title small">
-
-          <div>
-            <span>CANDIDATES</span>
-            <h3>具体的なキャラクター候補</h3>
-          </div>
-
-          <div class="step">
-            STEP 3
-          </div>
-
-        </div>
-
-
-        <div id="candidateList"></div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- 詳細 -->
-  <section class="panel detail-panel">
-
-    <div class="detail-header">
-
-      <div>
-        <span class="section-label">
-          CHARACTER DETAIL
-        </span>
-
-        <h3 id="characterName"></h3>
-
-        <p id="characterType"></p>
-      </div>
-
-
-      <div class="total-score">
-        <span>参考スコア</span>
-        <strong id="totalScore"></strong>
-      </div>
-
-    </div>
-
-
-
-    <div class="detail-grid">
-
-      <!-- 指標 -->
-      <div class="metrics">
-
-        <div class="metric">
-          <span>Compatibility</span>
-          <strong id="compatibility"></strong>
-          <small>現在顧客との親和性</small>
-        </div>
-
-
-        <div class="metric">
-          <span>Expansion</span>
-          <strong id="expansion"></strong>
-          <small>新市場への拡張余地</small>
-        </div>
-
-
-        <div class="metric">
-          <span>Unexpected Affinity</span>
-          <strong id="unexpected"></strong>
-          <small>属性以上の親和性</small>
-        </div>
-
-
-        <div class="metric">
-          <span>Reliability</span>
-          <strong id="reliability"></strong>
-          <small>synthetic sample上の安定性</small>
-        </div>
-
-      </div>
-
-
-
-      <!-- セグメント -->
-      <div class="segment-box">
-
-        <span class="section-label">
-          AUDIENCE PROFILE
-        </span>
-
-        <h4>5セグメント構成の差</h4>
-
-
-        <div class="segment-legend">
-          <span class="legend-current"></span>
-          現在顧客
-
-          <span class="legend-character"></span>
-          キャラ支持者
-        </div>
-
-
-        <div id="segmentChart"></div>
-
-      </div>
-
-
-
-      <!-- Insight -->
-      <div class="insight">
-
-        <span class="section-label">
-          INSIGHT
-        </span>
-
-        <h4>施策仮説</h4>
-
-        <p id="reason"></p>
-
-        <div id="candidateTags" class="tags"></div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-
-  <section class="notice">
-
-    <strong>
-      Synthetic Data / Interpretation Note
-    </strong>
-
-    <p>
-      本デモは完全に人工生成したsynthetic dataを使用した
-      ポートフォリオ用の一般化再実装です。
-      表示される商品・キャラクター・スコアは実在の分析結果ではありません。
-      また、キャラクター起用による売上増加等の因果効果を予測するものではなく、
-      候補比較・優先順位付け・施策仮説の生成を目的としています。
-    </p>
-
-  </section>
-
-</main>
-
-
-<footer>
-  CHARA MATCH — Portfolio Demo
-</footer>
-
-
-<script src="data.js"></script>
-<script src="app.js"></script>
-
+        <div id="matrixDetail" class="matrix-detail">候補をクリックすると、戦略上の位置づけを表示します。</div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer"><strong>Portfolio demo notice</strong><p>本デモは完全に人工生成したsynthetic dataのみを使用しています。表示される商品・キャラクター・スコアは架空であり、実在する対象の分析結果ではありません。また、売上増加等の因果効果を予測するものではなく、候補比較・優先順位付け・施策仮説の検討を目的としています。</p></footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
